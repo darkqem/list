@@ -3,7 +3,6 @@ using DotNetBungieAPI.Models.Destiny;
 using DotNetBungieAPI.Models;
 using DotNetBungieAPI.Models.User;
 using DotNetBungieAPI.Service.Abstractions;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +12,8 @@ using System.Numerics;
 using DotNetBungieAPI.Models.Destiny.Definitions.ActivityModes;
 using DotNetBungieAPI.Models.Destiny.Components;
 using DotNetBungieAPI.Models.Destiny.HistoricalStats;
-
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
-
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 
@@ -30,7 +27,7 @@ namespace Stopwatch.Utility
         }
 
         public static IBungieClient client;
-        public static string Config = "Your Mother#8493";
+        public static string Config = "Charok#2283";
 
         public static UserInfoCard User { get; private set; }
         public static DestinyCharacterActivitiesComponent ActiveCharacter { get; set; }
@@ -86,7 +83,7 @@ namespace Stopwatch.Utility
             if (reset > DateTime.UtcNow)
                 reset -= TimeSpan.FromDays(1);
             reset -= TimeSpan.FromDays(1);
-
+            reset -= TimeSpan.FromDays(1);
 
             int i = 0;
             foreach (var character in profileData.Response.Characters.Data.Values)

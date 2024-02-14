@@ -20,6 +20,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Security.Policy;
 using System.Text.RegularExpressions;
+using Microsoft.Web.WebView2.Core;
+using Newtonsoft.Json;
+using Microsoft.Web.WebView2.Wpf;
+using Microsoft.Web.WebView2.WinForms;
+using WebView2 = Microsoft.Web.WebView2.Wpf.WebView2;
 
 namespace list
 {
@@ -33,21 +38,48 @@ namespace list
 
         public void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
-            if (!string.IsNullOrEmpty(Url))
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "cmd",
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    Arguments = "/c start " + Url
-                });
-            }
-
-
+            ToggleWebViewVisibility();    
+            
         }
+
+        public WebView2 GetWebView2Control()
+        {
+            return webView;           
+        }
+
+
+        public void ToggleWebViewVisibility()
+        {
+            var blankUri = new Uri("about:blank");
+            // Check the current visibility of the webView
+            if (webView.Visibility == Visibility.Visible)
+            {
+                // If currently visible, collapse it and clear the source
+                webView.Visibility = Visibility.Collapsed;
+                webView.Source = blankUri;
+                ((MainWindow)Application.Current.MainWindow).CheckVisibleWebViews();
+            }
+            else if (!string.IsNullOrEmpty(Url))
+            {
+                webView.Source = new Uri(Url);
+                webView.Visibility = Visibility.Visible;
+                Application.Current.MainWindow.Width = 1280;
+                Application.Current.MainWindow.Height = 720;
+                webView.BringIntoView();
+            }
+            
+        }
+
+
+
+
+        // Event handler for when the WebView2 control finishes loading a page
+
+
+
+
+
+
 
         public static string InsertSpacesBeforeCapitals(string input)
         {
@@ -65,12 +97,9 @@ namespace list
         public ListActivity(DestinyHistoricalStatsPeriodGroup activity)
         {
             Activity = activity;
-            InitializeComponent();
+            InitializeComponent();            
             DisplayInfo();
-
         }
-
-
 
         private async void DisplayInfo()
         {
@@ -104,36 +133,43 @@ namespace list
                     Dot.Fill = brush;
                 }
 
-                if (Modes == "AllPvP")
+                switch (Mode)
+                {
+                    case "Raid":
+                    case "Dungeon":
+                    case "LostSector":
+                    case "Gambit":
+                    case "Patrol":
+                        IconActivity.Data = Application.Current.Resources[Mode] as Geometry;
+                        break;
+                    case "Strike":
+                    case "Nightfall":
+                    case "Heroic Nightfall":
+                    case "Scored Nightfall":
+                    case "Scored Heroic Nightfall":
+                    case "All Strikes":
+                    case "":
+                        IconActivity.Data = Application.Current.Resources["Strike"] as Geometry;
+                        break;
+                    default:
+                        IconActivity.Data = Application.Current.Resources["Patrol"] as Geometry;
+                        break;
+                }
+
+                if (Modes == "PrivateMatchesAll")
+                {
+                    IconActivity.Data = Application.Current.Resources["AllPvP"] as Geometry;
+                }
+                else if (Modes == "AllPvP")
                 {
                     IconActivity.Data = Application.Current.Resources[Modes] as Geometry;
                 }
-                else 
+
+                if(Mode == "Trials Of Osiris" )
                 {
-                    switch (Mode)
-                    {
-                        case "Raid":
-                        case "Dungeon":
-                        case "LostSector":
-                        case "Gambit":
-                        case "TrialsOfOsiris":
-                        case "Patrol":
-                            IconActivity.Data = Application.Current.Resources[Mode] as Geometry;
-                            break;
-                        case "Strike":
-                        case "Nightfall":
-                        case "HeroicNightfall":
-                        case "ScoredNightfall":
-                        case "ScoredHeroicNightfall":
-                        case "AllStrikes":
-                            IconActivity.Data = Application.Current.Resources["Strike"] as Geometry;
-                            break;
-                        default:
-                            IconActivity.Data = Application.Current.Resources["Patrol"] as Geometry;
-                            break;
-                    }
+                    IconActivity.Data = Application.Current.Resources["TrialsOfOsiris"] as Geometry;
                 }
-                    
+
                 var modeUrlMap = new Dictionary<string, string>
                 {
                     { "Raid", "https://raid.report/pgcr/" },
@@ -158,131 +194,11 @@ namespace list
                 {
                     Url = "https://destinytracker.com/destiny-2/pgcr/" + instanceId;
                 }
-
                 
+                
+
 
             }
         }       
     }
 }
-
-
-
-
-/*if (Act[val].Values.TryGetValue("activityDurationSeconds", out var destinyHistoricalStatsValue))
-                    {
-                        uint hash = (uint)Act[val].ActivityDetails.ActivityReference.Hash;
-
-                        var display = await D2CharacterTracker.client.ApiAccess.Destiny2.GetDestinyEntityDefinition<DestinyActivityDefinition>(DefinitionsEnum.DestinyActivityDefinition, hash);
-
-                        string activityName = display.Response.DisplayProperties.Name;
-                        string duration = destinyHistoricalStatsValue.BasicValue.DisplayValue;
-                        string completed = "";
-
-                        if (Act[val].Values.TryGetValue("completed", out var compl))
-                        {
-                            completed = compl.BasicValue.DisplayValue;
-                        }
-
-                        
-                    }
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * private Border CreateBorderElement(string activityName, string duration, string completed)
-        {
-            Border border = new Border
-            {
-                Margin = new Thickness(5, 5, 5, 5),
-                CornerRadius = new CornerRadius(15),
-                Padding = new Thickness(20)
-
-            };
-
-            var converter = new System.Windows.Media.BrushConverter();
-            var brush = (Brush)converter.ConvertFromString("#22000000");
-
-            border.Background = brush;
-
-            TextBlock txtBlk = new TextBlock
-            {
-                Text = $"{activityName}, {duration} ",
-                TextWrapping = TextWrapping.Wrap,
-                Foreground = Brushes.AliceBlue,
-                FontFamily = new FontFamily("Microsoft JhengHei UI Light"),
-                FontWeight = FontWeights.Bold,
-                FontStyle = FontStyles.Normal,
-                FontSize = 14,
-            };
-            Ellipse Dot = new Ellipse
-            {
-                Width = 12,
-                Height = 12,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment = VerticalAlignment.Center,
-            };
-            converter = new System.Windows.Media.BrushConverter();
-            brush = (Brush)converter.ConvertFromString(completed == "Yes" ? "#EE67C06B" : "#c06b67");
-            Dot.Fill = brush;
-            StackPanel stackPanel = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            stackPanel.Children.Add(txtBlk);
-            stackPanel.Children.Add(Dot);
-
-            border.Child = stackPanel;
-
-            return border;
-        }
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- */

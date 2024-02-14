@@ -1,11 +1,10 @@
 ﻿<UserControl x:Class="list.ListActivity"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:list"
-             mc:Ignorable="d" 
-             d:DesignHeight="48" d:DesignWidth="350">
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             mc:Ignorable="d" d:DesignWidth="350" Height="auto" HorizontalAlignment="Stretch" Width="Auto">
     <Grid>
         <Grid.Resources>
 
@@ -30,27 +29,25 @@
             </Style>
 
         </Grid.Resources>
-        <Border MouseLeftButtonDown="Border_MouseLeftButtonDown" Width="350">
-
-            <Grid>
-                <StackPanel Orientation="Horizontal">
-                    <Rectangle x:Name="Dot" Fill="Green" HorizontalAlignment="Left" VerticalAlignment="Center" Width="8" Height="48" />
-                    <Path x:Name="IconActivity" Data="{StaticResource Raid}" Width="35" Height="35" Stretch="Uniform" Margin="5,0,0,0"/>
-                    <StackPanel Orientation="Vertical" Margin="5">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="ActMode" FontFamily="Times" FontWeight="Bold" FontSize="13" Text="Raid"/>
-                            <Path x:Name="IconClass" Data="{StaticResource Hunter}" Width="14" Height="14" Stretch="Uniform" Margin="5,0,0,0"/>
+        <StackPanel x:Name="webViewContainer">
+            <Border MouseLeftButtonDown="Border_MouseLeftButtonDown" Height="48">
+                <Grid>
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle x:Name="Dot" Fill="Green" VerticalAlignment="Center" Width="8" Height="48" Margin="0"/>
+                        <Path x:Name="IconActivity" Data="{StaticResource Raid}" Width="35" Height="35" Stretch="Uniform" Margin="5,0,0,0"/>
+                        <StackPanel Orientation="Vertical" Margin="5">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="ActMode" FontFamily="Times" FontWeight="Bold" FontSize="13" Text="Raid"/>
+                                <Path x:Name="IconClass" Data="{StaticResource Hunter}" Width="14" Height="14" Stretch="Uniform" Margin="5,0,0,0"/>
+                            </StackPanel>
+                            <Separator Visibility="Hidden"/>
+                            <TextBlock x:Name="ActName"  Text="Garden of Salvation" FontSize="15" />
                         </StackPanel>
-                        <Separator Visibility="Hidden"/>
-                        <TextBlock x:Name="ActName"  Text="Garden of Salvation" FontSize="15" />
                     </StackPanel>
-                </StackPanel>
-                <TextBlock x:Name="ActTime" Text="5m 4s" Grid.Column="2"  FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Height="18"/>
-            </Grid>
-        </Border>
-
+                    <TextBlock x:Name="ActTime" Text="5m 4s" Grid.Column="2"  FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Height="18"/>
+                </Grid>
+            </Border>
+            <controls:WebView2 x:Name="webView" Height="450" Visibility="Collapsed" ZoomFactor="0.8"/>
+        </StackPanel>
     </Grid>
-
-
-
 </UserControl>
